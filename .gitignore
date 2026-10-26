@@ -1,0 +1,16 @@
+# Wird von XcodeGen erzeugt
+Charla.xcodeproj/
+Config/Info.plist
+
+# Build-Ergebnisse
+build/
+*.ipa
+
+# Tests
+node_modules/
+tests/shots/
+
+# Xcode und macOS
+xcuserdata/
+*.xcuserstate
+.DS_Store
