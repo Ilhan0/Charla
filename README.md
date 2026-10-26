@@ -1,116 +1,126 @@
-# Charla – Spanisch lernen für iOS
+# Charla – Learn Spanish on iOS
+
+**English** · [Deutsch](README.de.md)
 
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
-[![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-teal.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)
 
-Charla ist eine kostenlose, quelloffene Lern-App für Spanisch (Niveau A1) mit deutscher Oberfläche. Sie läuft offline auf dem iPhone und im Browser, braucht keine Konten und keine fremden Bibliotheken.
+Charla is a free, open-source app for learning Spanish (level A1) with an English or German interface. It works offline on the iPhone and in the browser, needs no account and no third-party libraries.
 
-![Charla: Lernpfad, Vokabel, Satz bauen, Dialog, Wiederholen](docs/screenshots/uebersicht.png)
+![Charla: learning path, new word, build the sentence, dialogue, review](docs/screenshots/en/uebersicht.png)
 
-> **Dieses Projekt ist mit KI entstanden.** Code, Lerninhalte, Texte und App-Icon wurden zusammen mit Claude (Anthropic) entwickelt. Die Spanisch-Inhalte wurden automatisch und stichprobenartig geprüft, aber nicht von einer Lehrkraft. Fehler sind möglich. Du kannst sie über die Issue-Vorlage „Fehler im Lerninhalt“ melden. Charla hat keine Verbindung zu kommerziellen Sprachlern-Diensten.
+> **This project was made with AI.** The code, the lessons, the texts and the app icon were developed together with Claude (Anthropic). The Spanish content was checked automatically and by sampling, but not by a teacher, so mistakes are possible. Please report them with the “Content error” issue template. Charla has no connection to any commercial language-learning service.
 
-## Funktionen
+## Features
 
-- **Lektionen:** 5 Einheiten, 20 Lektionen, rund 220 Wörter und Sätze. Jede Lektion hat Vokabeln, einen Dialog und einen Grammatik-Tipp.
-- **Zwölf Übungsarten:** Wort kennenlernen, Auswahl, Bildauswahl, Hören, Zuordnen, Tippen, Diktat, Satz bauen, Lückentext, Sprechen, Dialog, passende Antwort.
-- **Wiederholen:** Intervall-Training nach dem Leitner-System (7 Stufen von 10 Minuten bis 90 Tage). Die Übungsart wird mit der Stufe schwerer.
-- **Fehlertoleranz:** Akzente und kleine Tippfehler zählen als „fast richtig“, das ñ bleibt unterscheidbar.
-- **Motivation:** Tagesziel, Serie, Erfahrungspunkte und bis zu drei Sterne pro Lektion.
-- **Wortschatz:** Liste mit Suche, Favoriten und „schwache Wörter“.
-- **Sprache:** Sprachausgabe und Spracherkennung über iOS, in Tempo und Stimme einstellbar.
-- **Sonstiges:** Dunkelmodus, Haptik, Töne, Export und Import des Lernstands.
+- **Lessons:** 5 units, 20 lessons, about 220 words and sentences. Every lesson has vocabulary, a dialogue and a grammar tip.
+- **Twelve exercise types:** new word, multiple choice, picture choice, listening, matching, typing, dictation, building a sentence, fill in the gap, speaking, dialogue, fitting reply.
+- **Review:** spaced repetition with the Leitner system (7 boxes from 10 minutes to 90 days). The exercise type gets harder as a word moves up.
+- **Forgiving answers:** accents and small typos count as “almost right”, while ñ stays distinct.
+- **Motivation:** daily goal, streak, experience points (XP) and up to three stars per lesson.
+- **Vocabulary:** a list with search, favorites and “weak words”.
+- **Speech:** text-to-speech and speech recognition via iOS, with adjustable voice and speed.
+- **Bilingual:** the interface and all lessons are available in English and German. Choose the language on the first screen or in the profile; your progress is kept.
+- **More:** dark mode, haptics, sounds, export and import of your progress.
 
-| Lektion | Fehlerhinweis | Abschluss |
+| Lesson | Wrong answer | Result |
 |---|---|---|
-| ![](docs/screenshots/vokabel-lernen.png) | ![](docs/screenshots/antwort-falsch.png) | ![](docs/screenshots/lektion-fertig.png) |
+| ![](docs/screenshots/en/vokabel-lernen.png) | ![](docs/screenshots/en/antwort-falsch.png) | ![](docs/screenshots/en/lektion-fertig.png) |
 
-| Wortschatz | Profil |
+| Vocabulary | Profile |
 |---|---|
-| ![](docs/screenshots/wortschatz.png) | ![](docs/screenshots/profil.png) |
+| ![](docs/screenshots/en/wortschatz.png) | ![](docs/screenshots/en/profil.png) |
 
-## Schnellstart
+## Quick start
 
-### Im Browser
+### In the browser
 
-`www/index.html` öffnen, am besten in der Handy-Ansicht des Browsers. Es ist kein Build-Schritt nötig.
+Open `www/index.html`, preferably in your browser's mobile view. No build step is needed.
 
-### Auf dem iPhone (Mac mit Xcode)
+### On the iPhone (Mac with Xcode)
 
 ```bash
 brew install xcodegen
-./build_ipa.sh        # erzeugt Charla.ipa (unsigniert)
+./build_ipa.sh        # creates Charla.ipa (unsigned)
 ```
 
-Alternativ: `mkdir -p Config && xcodegen generate`, `Charla.xcodeproj` in Xcode öffnen, unter *Signing & Capabilities* deine Apple-ID als Team wählen und auf dem iPhone starten.
+Alternatively: `mkdir -p Config && xcodegen generate`, open `Charla.xcodeproj` in Xcode, choose your Apple ID as the team under *Signing & Capabilities* and run it on your iPhone.
 
-Die unsignierte `.ipa` kannst du mit [Sideloadly](https://sideloadly.io) oder [AltStore](https://altstore.io) mit deiner Apple-ID signieren. Mit einer kostenlosen Apple-ID läuft die App 7 Tage und muss dann neu signiert werden. Fertige Builds liegen unter *Releases*.
+You can sign the unsigned `.ipa` with [Sideloadly](https://sideloadly.io) or [AltStore](https://altstore.io) using your Apple ID. With a free Apple ID the app runs for 7 days and then has to be signed again. Ready-made builds are available under *Releases*.
 
-## Wie die App aufgebaut ist
-
-```
-www/             Die App: HTML, CSS und JavaScript ohne Build-Schritt
-  js/content/    Lerninhalte (eine Datei pro Einheit)
-  js/engine.js   Baut aus einer Lektion die Übungsfolge
-  js/exercises.js  Darstellung aller Übungsarten
-  js/srs.js      Intervall-Wiederholung (Leitner)
-  js/text.js     Antwortprüfung (Akzente, Tippfehler, Aussprache-Ähnlichkeit)
-  js/store.js    Lernstand, XP, Serie
-Charla/          Dünne iOS-Hülle in Swift
-  WebViewController.swift   lädt www/ in einem WKWebView
-  SpeechBridge.swift        Sprachausgabe und Spracherkennung
-  StateStore.swift          Lernstand als JSON-Datei
-project.yml      Xcode-Projekt (XcodeGen)
-tests/           Inhaltsprüfung und Ende-zu-Ende-Test
-```
-
-Die Oberfläche läuft komplett als Web-App. Die Swift-Hülle reicht nur iOS-Funktionen an sie durch:
+## How the app is built
 
 ```
-JavaScript ──postMessage──▶ WebViewController ──▶ SpeechBridge / StateStore / Haptik
-JavaScript ◀──onEvent───── WebViewController ◀── Ereignisse (speakEnd, voices, listen)
+www/             The app: HTML, CSS and JavaScript, no build step
+  js/content/    Lesson data (one file per unit, German)
+  js/content/en/ English translation of the lesson data
+  js/i18n.js     Language layer; js/i18n/en.js holds the English interface texts
+  js/engine.js   Builds the exercise sequence from a lesson
+  js/exercises.js  Rendering of all exercise types
+  js/srs.js      Spaced repetition (Leitner)
+  js/text.js     Answer checking (accents, typos, pronunciation similarity)
+  js/store.js    Progress, XP, streak
+Charla/          Thin iOS shell in Swift
+  WebViewController.swift   loads www/ in a WKWebView
+  SpeechBridge.swift        text-to-speech and speech recognition
+  StateStore.swift          progress as a JSON file
+project.yml      Xcode project (XcodeGen)
+tests/           Content check and end-to-end test
 ```
 
-Im Browser fallen dieselben Funktionen auf die Web-Speech-APIs zurück. Deshalb lässt sich fast alles ohne Mac entwickeln und testen.
+The whole interface is a web app. The Swift shell only passes iOS features through to it:
 
-## Eigene Lektionen schreiben
+```
+JavaScript ──postMessage──▶ WebViewController ──▶ SpeechBridge / StateStore / haptics
+JavaScript ◀──onEvent───── WebViewController ◀── events (speakEnd, voices, listen)
+```
 
-Lege eine Lektion in einer der Dateien unter `www/js/content/` an oder erstelle `u6.js` und binde sie in `www/index.html` ein:
+In the browser the same features fall back to the Web Speech APIs, so almost everything can be developed and tested without a Mac.
+
+## Languages
+
+The Spanish course text is the same for everyone. Interface texts are written in German in the code and looked up through `tr('German text')`; `js/i18n/en.js` maps them to English. Lesson translations (word meanings, example sentences, dialogue lines, tips) live in `www/js/content/en/`. The language is chosen at startup, and switching it reloads the page. To add another language, add an interface dictionary and a content folder like the English ones and register the language code in `js/i18n.js`.
+
+## Writing your own lessons
+
+Add a lesson to one of the files in `www/js/content/` or create `u6.js` and include it in `www/index.html`:
 
 ```js
 {
   title: 'En el café', sub: 'Im Café bestellen', emoji: '☕',
-  tip: ['Titel des Tipps', 'Text des Tipps'],
+  tip: ['Tip title', 'Tip text'],
   items: [
-    // [Spanisch, Deutsch, Emoji, Beispielsatz, Übersetzung, [weitere richtige Antworten]]
+    // [Spanish, meaning, emoji, example sentence, translation, [other accepted answers]]
     ['un café', 'ein Kaffee', '!☕', 'Un café, por favor.', 'Einen Kaffee, bitte.']
   ],
-  dialogue: ['Im Café', [ ['Camarero', 'Hola.', 'Hallo.'] ]]
+  dialogue: ['At the café', [ ['Camarero', 'Hola.', 'Hallo.'] ]]
 }
 ```
 
-Ein `!` vor dem Emoji erzeugt eine Bildauswahl-Aufgabe. Ein leerer Beispielsatz bedeutet, dass das Wort nur als Vokabel geübt wird. Prüfe danach mit `node tests/validate.js`.
+A `!` before the emoji creates a picture-choice exercise. An empty example sentence means the word is only practised as vocabulary. Then add the English texts in the same order in `www/js/content/en/` and run `node tests/validate.js`, which checks both languages and reports missing or shifted translations.
 
 ## Tests
 
 ```bash
 cd tests && npm install && npx playwright install chromium && cd ..
-node tests/validate.js   # prüft Inhalte und erzeugt tausende zufällige Übungen
-node tests/e2e.js        # spielt Lektion und Wiederholung in einem Handy-Browser durch
+node tests/validate.js          # checks the content and generates thousands of random exercises (both languages)
+node tests/e2e.js               # plays a lesson and a review in a mobile browser
+LANGUAGE=en node tests/e2e.js   # the same in English, including a language switch
 ```
 
-Beide Tests laufen auch bei jedem Push in GitHub Actions. Der Test `e2e.js` legt Screenshots unter `tests/shots/` ab.
+Both tests also run on every push in GitHub Actions. `e2e.js` saves screenshots to `tests/shots/`.
 
-## Mitmachen
+## Contributing
 
-Über Fehlerberichte, neue Lektionen und Übersetzungen freue ich mich. Details stehen in [CONTRIBUTING.md](CONTRIBUTING.md).
+Bug reports, new lessons and translations are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Bekannte Grenzen
+## Known limitations
 
-- Nur Niveau A1 und nur Deutsch als Ausgangssprache.
-- Die iOS-Hülle ist wenig getestet. Die Web-App ist es deutlich mehr.
-- Die Qualität der Stimmen hängt von den auf dem Gerät geladenen iOS-Stimmen ab. Unter *Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Spanisch* kannst du bessere laden.
-- Die Spracherkennung braucht in der Regel Internet.
+- Only level A1; the source languages are English and German.
+- The iOS shell has had little testing. The web app has had much more.
+- Voice quality depends on the iOS voices installed on the device. You can download better ones under *Settings → Accessibility → Spoken Content → Voices → Spanish*.
+- Speech recognition usually needs an internet connection.
 
-## Lizenz
+## License
 
-[MIT](LICENSE) für Code und Lerninhalte.
+[MIT](LICENSE) for code and lesson content.

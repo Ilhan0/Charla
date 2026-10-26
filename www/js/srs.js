@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   const C = (window.Charla = window.Charla || {});
+  const tr = C.i18n.t;
   const S = C.store;
   const R = (C.srs = {});
 
@@ -9,7 +10,7 @@
   /** Abstand bis zur nächsten Wiederholung je Box (0 = in 10 Minuten) */
   R.INTERVALS = [10 * 60 * 1000, 1 * DAY, 3 * DAY, 7 * DAY, 16 * DAY, 35 * DAY, 90 * DAY];
   R.MAX = R.INTERVALS.length - 1;
-  R.LABELS = ['Neu', 'Frisch', 'Lernend', 'Bekannt', 'Gefestigt', 'Sicher', 'Meister'];
+  R.LABELS = [tr('Neu'), tr('Frisch'), tr('Lernend'), tr('Bekannt'), tr('Gefestigt'), tr('Sicher'), tr('Meister')];
 
   R.get = function (id) { return S.state.vocab[id] || null; };
 

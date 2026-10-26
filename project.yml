@@ -34,8 +34,8 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
-        NSMicrophoneUsageDescription: Das Mikrofon wird für die Sprechübungen benötigt.
-        NSSpeechRecognitionUsageDescription: Die Spracherkennung prüft deine spanische Aussprache.
+        NSMicrophoneUsageDescription: Das Mikrofon wird für die Sprechübungen benötigt. / The microphone is used for the speaking exercises.
+        NSSpeechRecognitionUsageDescription: Die Spracherkennung prüft deine spanische Aussprache. / Speech recognition checks your Spanish pronunciation.
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
         ITSAppUsesNonExemptEncryption: false

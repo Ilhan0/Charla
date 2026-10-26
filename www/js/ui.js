@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   const C = (window.Charla = window.Charla || {});
+  const tr = C.i18n.t;
   const U = C.util;
   const h = U.h;
   const ui = (C.ui = {});
@@ -46,7 +47,7 @@
     opts = opts || {};
     const btn = h('button.speak' + (opts.slow ? '.slow' : '') + (opts.big ? '.big' : ''), {
       type: 'button',
-      'aria-label': opts.slow ? 'Langsam vorspielen' : 'Vorspielen',
+      'aria-label': opts.slow ? tr('Langsam vorspielen') : tr('Vorspielen'),
       onclick: function (e) {
         e.stopPropagation();
         ui.play(text, opts, btn);
@@ -110,7 +111,7 @@
       if (opts.text) sh.body.appendChild(h('p.sheet-text', opts.text));
       sh.body.appendChild(h('div.sheet-actions',
         ui.btn(opts.ok || 'OK', { kind: opts.danger ? 'danger' : 'primary', block: true, onclick: function () { answered = true; resolve(true); sh.close(); } }),
-        ui.btn(opts.cancel || 'Abbrechen', { kind: 'ghost', block: true, onclick: function () { sh.close(); } })));
+        ui.btn(opts.cancel || tr('Abbrechen'), { kind: 'ghost', block: true, onclick: function () { sh.close(); } })));
     });
   };
 

@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   const C = (window.Charla = window.Charla || {});
+  const tr = C.i18n.t;
   const U = C.util;
   const T = C.text;
   const K = C.content;
@@ -48,17 +49,17 @@
 
   // ---------- einzelne Aufgaben ----------
   E.intro = function (item) {
-    return { type: 'intro', itemId: item.id, prompt: 'Neu', es: item.es, de: item.de, emoji: item.emoji, exEs: item.exEs, exDe: item.exDe };
+    return { type: 'intro', itemId: item.id, prompt: tr('Neu'), es: item.es, de: item.de, emoji: item.emoji, exEs: item.exEs, exDe: item.exDe };
   };
 
   E.mc = function (item, dir) {
     dir = dir || 'es-de';
     if (dir === 'es-de') {
       const answer = item.de;
-      return { type: 'mc', dir: dir, itemId: item.id, prompt: 'Was bedeutet das?', es: item.es, de: item.de, emoji: item.emoji,
+      return { type: 'mc', dir: dir, itemId: item.id, prompt: tr('Was bedeutet das?'), es: item.es, de: item.de, emoji: item.emoji,
         options: U.shuffle([answer].concat(E.distractors(item, 'de', 3))), answer: answer, say: item.es, autoSay: true };
     }
-    return { type: 'mc', dir: dir, itemId: item.id, prompt: 'Wie sagt man das auf Spanisch?', es: item.es, de: item.de, emoji: item.emoji,
+    return { type: 'mc', dir: dir, itemId: item.id, prompt: tr('Wie sagt man das auf Spanisch?'), es: item.es, de: item.de, emoji: item.emoji,
       options: U.shuffle([item.es].concat(E.distractors(item, 'es', 3))), answer: item.es, say: item.es };
   };
 
@@ -69,30 +70,30 @@
     const rest = U.shuffle(cands.filter(function (i) { return i.lessonId !== item.lessonId; }));
     const picks = U.uniqBy(same.concat(rest), function (i) { return i.emoji; }).slice(0, 3);
     if (picks.length < 3) return null;
-    return { type: 'pic', itemId: item.id, prompt: 'Welches Bild passt?', es: item.es, de: item.de,
+    return { type: 'pic', itemId: item.id, prompt: tr('Welches Bild passt?'), es: item.es, de: item.de,
       options: U.shuffle([item.emoji].concat(picks.map(function (p) { return p.emoji; }))), answer: item.emoji, say: item.es, autoSay: true };
   };
 
   E.listen = function (item, mode) {
     mode = mode || (Math.random() < 0.5 ? 'es' : 'de');
     const field = mode === 'es' ? 'es' : 'de';
-    return { type: 'listen', mode: mode, itemId: item.id, prompt: mode === 'es' ? 'Was hörst du?' : 'Was bedeutet das?',
+    return { type: 'listen', mode: mode, itemId: item.id, prompt: mode === 'es' ? tr('Was hörst du?') : tr('Was bedeutet das?'),
       audio: item.es, es: item.es, de: item.de, emoji: item.emoji,
       options: U.shuffle([item[field]].concat(E.distractors(item, field, 3))), answer: item[field] };
   };
 
   E.match = function (items) {
-    return { type: 'match', prompt: 'Ordne die Paare zu',
+    return { type: 'match', prompt: tr('Ordne die Paare zu'),
       pairs: items.slice(0, 5).map(function (i) { return { id: i.id, es: i.es, de: i.de }; }) };
   };
 
   E.type = function (item) {
-    return { type: 'type', itemId: item.id, prompt: 'Übersetze ins Spanische', de: item.de, emoji: item.emoji,
+    return { type: 'type', itemId: item.id, prompt: tr('Übersetze ins Spanische'), de: item.de, emoji: item.emoji,
       answer: item.es, alts: item.alt || [], say: item.es };
   };
 
   E.dictation = function (item) {
-    return { type: 'dictation', itemId: item.id, prompt: 'Schreibe, was du hörst', audio: item.es, de: item.de,
+    return { type: 'dictation', itemId: item.id, prompt: tr('Schreibe, was du hörst'), audio: item.es, de: item.de,
       answer: item.es, alts: item.alt || [], say: null };
   };
 
@@ -121,7 +122,7 @@
       if (!same) break;
       shuffled = U.shuffle(shuffled);
     }
-    return { type: 'order', itemId: src.itemId, prompt: 'Bilde den Satz auf Spanisch', de: src.de, es: src.es,
+    return { type: 'order', itemId: src.itemId, prompt: tr('Bilde den Satz auf Spanisch'), de: src.de, es: src.es,
       tiles: shuffled, expected: T.normalize(src.es), say: src.es };
   };
 
@@ -166,16 +167,16 @@
     if (wrong.length < 2) return null;
 
     const display = parts.map(function (p, i) { return i === c.i ? null : p; });
-    return { type: 'gap', itemId: src.itemId, prompt: 'Welches Wort fehlt?', parts: display, blankIndex: c.i, lead: c.lead, trail: c.trail,
+    return { type: 'gap', itemId: src.itemId, prompt: tr('Welches Wort fehlt?'), parts: display, blankIndex: c.i, lead: c.lead, trail: c.trail,
       es: src.es, de: src.de, options: U.shuffle([answer].concat(wrong)), answer: answer, say: src.es };
   };
 
   E.speak = function (src) {
-    return { type: 'speak', itemId: src.itemId, prompt: 'Sprich nach', es: src.es, de: src.de };
+    return { type: 'speak', itemId: src.itemId, prompt: tr('Sprich nach'), es: src.es, de: src.de };
   };
 
   E.dialogue = function (lesson) {
-    return { type: 'dialogue', lessonId: lesson.id, prompt: 'Dialog', title: lesson.dialogue.title, lines: lesson.dialogue.lines };
+    return { type: 'dialogue', lessonId: lesson.id, prompt: tr('Dialog'), title: lesson.dialogue.title, lines: lesson.dialogue.lines };
   };
 
   E.reply = function (lesson, usedIdx) {
@@ -201,12 +202,12 @@
       if (wrong.length < 3 && !seen.has(f) && T.wordCount(ln.es) <= 10) { seen.add(f); wrong.push(ln.es); }
     });
     if (wrong.length < 2) return null;
-    return { type: 'reply', prompt: 'Was passt als Antwort?', lineIndex: j, context: d.lines.slice(Math.max(0, j - 2), j),
+    return { type: 'reply', prompt: tr('Was passt als Antwort?'), lineIndex: j, context: d.lines.slice(Math.max(0, j - 2), j),
       answerLine: ans, options: U.shuffle([ans.es].concat(wrong)), answer: ans.es, say: ans.es };
   };
 
   E.tip = function (lesson) {
-    return { type: 'tip', prompt: 'Gut zu wissen', title: lesson.tip.title, text: lesson.tip.text };
+    return { type: 'tip', prompt: tr('Gut zu wissen'), title: lesson.tip.title, text: lesson.tip.text };
   };
 
   // ---------- Abläufe ----------

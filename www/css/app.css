@@ -374,6 +374,8 @@ textarea.backup { width: 100%; border-radius: 14px; border: 2px solid var(--line
 .field:focus { border-color: var(--primary); }
 .field.right { border-color: var(--ok); background: var(--ok-soft); }
 .field.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.onb-lang { margin-top: 26px; display: flex; justify-content: center; }
+.onb-lang .seg button { padding: 10px 16px; font-size: 15px; }
 .keys { display: flex; gap: 4px; margin-top: 12px; justify-content: center; }
 .key { min-width: 34px; height: 42px; padding: 0 4px; border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); font-weight: 700; font-size: 20px; text-align: center; }
 .key:active { background: var(--primary-soft); }

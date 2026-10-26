@@ -65,7 +65,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKScriptM
 
     private func loadApp() {
         guard let www = Bundle.main.url(forResource: "www", withExtension: nil) else {
-            webView.loadHTMLString("<h2 style='font-family:-apple-system;padding:24px'>Charla: Der Ordner „www“ fehlt im App-Paket.</h2>",
+            webView.loadHTMLString("<h2 style='font-family:-apple-system;padding:24px'>Charla: Der Ordner „www“ fehlt im App-Paket. / The folder “www” is missing from the app bundle.</h2>",
                                    baseURL: nil)
             return
         }

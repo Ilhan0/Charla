@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   const C = (window.Charla = window.Charla || {});
+  const tr = C.i18n.t;
   const U = C.util;
   const h = U.h;
   const S = C.store;
@@ -10,10 +11,10 @@
   const App = (C.app = { tab: 'learn' });
 
   const TABS = [
-    { id: 'learn', label: 'Lernen', icon: 'book' },
-    { id: 'review', label: 'Wiederholen', icon: 'review' },
-    { id: 'vocab', label: 'Wortschatz', icon: 'words' },
-    { id: 'profile', label: 'Profil', icon: 'user' }
+    { id: 'learn', label: tr('Lernen'), icon: 'book' },
+    { id: 'review', label: tr('Wiederholen'), icon: 'review' },
+    { id: 'vocab', label: tr('Wortschatz'), icon: 'words' },
+    { id: 'profile', label: tr('Profil'), icon: 'user' }
   ];
 
   let view = null;
@@ -55,11 +56,15 @@
   App.boot = function () {
     S.load();
     C.content.build();
+    document.title = tr('Charla – Spanisch lernen');
     view = document.getElementById('view');
     tabbar = document.getElementById('tabbar');
+    tabbar.setAttribute('aria-label', tr('Hauptmenü'));
     S.subscribe(function () { App.refresh(); });
     if (S.state.profile.onboarded) {
-      App.go('learn');
+      // Nach einem Sprachwechsel lädt die Seite neu und kehrt zum Profil zurück
+      const wanted = String(window.location.hash || '').replace('#', '');
+      App.go(['learn', 'review', 'vocab', 'profile'].indexOf(wanted) >= 0 ? wanted : 'learn');
     } else {
       App.go('learn');
       C.screens.onboarding(function () { App.go('learn'); });

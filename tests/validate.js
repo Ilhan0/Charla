@@ -5,15 +5,43 @@ const URL = 'file://' + path.join(__dirname, '..', 'www', 'index.html');
 
 (async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let failed = false;
+  for (const lang of ['de', 'en']) {
+  console.log('\n=== Sprache:', lang, '===');
+  const ctx = await browser.newContext({ locale: lang === 'en' ? 'en-US' : 'de-DE' });
+  const page = await ctx.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(e.message));
   await page.goto(URL);
   await page.waitForFunction(() => window.Charla && Charla.content && Charla.content.built);
-  const report = await page.evaluate(() => {
+  const report = await page.evaluate((lang) => {
     const C = Charla, K = C.content, T = C.text, E = C.engine, U = C.util;
     const problems = [], info = {};
     const add = (m) => { if (problems.length < 200) problems.push(m); };
+    if (C.i18n.current !== lang) add('Sprache ist ' + C.i18n.current + ', erwartet ' + lang);
+
+    // 0. Übersetzung vollständig? (Anzahl der Einträge je Lektion, keine deutschen Sonderzeichen im Englischen)
+    if (lang === 'en') {
+      const pack = C.i18n.content.en || {};
+      K.units.forEach(u => {
+        const ov = pack[u.id];
+        if (!ov) { add(u.id + ': keine englische Übersetzung'); return; }
+        if (!ov.title || !ov.sub) add(u.id + ': Titel/Untertitel fehlt');
+        if (/[äöüß]/i.test(u.title + u.sub)) add(u.id + ': deutsche Zeichen im Einheitentitel');
+        if ((ov.lessons || []).length !== u.lessons.length) add(u.id + ': ' + (ov.lessons || []).length + ' Lektionen übersetzt statt ' + u.lessons.length);
+        u.lessons.forEach((l, li) => {
+          const lo = (ov.lessons || [])[li];
+          if (!lo) return;
+          if (!lo.sub || !lo.tip || !lo.tip[0] || !lo.tip[1]) add(l.id + ': Untertitel/Tipp fehlt');
+          if ((lo.items || []).length !== l.items.length) add(l.id + ': ' + (lo.items || []).length + ' Wörter übersetzt statt ' + l.items.length);
+          if (lo.dialogue && l.dialogue && lo.dialogue[1].length !== l.dialogue.lines.length) add(l.id + ': Dialog hat ' + lo.dialogue[1].length + ' statt ' + l.dialogue.lines.length + ' Zeilen');
+          const all = [l.sub, l.tip && l.tip.title, l.tip && l.tip.text, l.dialogue && l.dialogue.title]
+            .concat(l.items.map(i => i.de + ' ' + i.exDe)).concat(l.dialogue ? l.dialogue.lines.map(x => x.de) : []);
+          all.forEach(t => { if (t && /[äöüß]/i.test(t)) add(l.id + ': deutsche Zeichen in „' + String(t).slice(0, 40) + '“'); });
+          l.items.forEach((it, i) => { if (lo.items && lo.items[i] && !lo.items[i][0]) add(it.id + ': Übersetzung leer'); });
+        });
+      });
+    }
 
     // 1. Struktur
     K.lessons.forEach(l => {
@@ -79,13 +107,16 @@ const URL = 'file://' + path.join(__dirname, '..', 'www', 'index.html');
       C.store.state.vocab = {};
     }
     return { problems: problems, info: info, types: types, total: total, items: K.allItems.length, lessons: K.lessons.length };
-  });
+  }, lang);
   console.log('Lektionen:', report.lessons, 'Wörter:', report.items, 'Aufgaben (25 Durchläufe):', report.total);
   console.log('Schritte je Lektion (letzter Durchlauf):', JSON.stringify(report.info));
   console.log('Typen:', JSON.stringify(report.types));
   const uniq = [...new Set(report.problems)];
   console.log('Probleme:', uniq.length ? '\n - ' + uniq.join('\n - ') : 'keine');
   if (errs.length) console.log('Seitenfehler:', errs);
+  if (uniq.length || errs.length) failed = true;
+  await ctx.close();
+  }
   await browser.close();
-  process.exit(uniq.length || errs.length ? 1 : 0);
+  process.exit(failed ? 1 : 0);
 })();

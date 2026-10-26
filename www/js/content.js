@@ -29,10 +29,46 @@
 
   C.addUnit = function (u) { K.units.push(u); };
 
+  /** Setzt Titel, Übersetzungen, Tipps und Dialog-Übersetzungen auf die gewählte Sprache (Spanisch bleibt unverändert) */
+  K.localize = function () {
+    const I = C.i18n;
+    const pack = I && I.current !== 'de' ? I.content[I.current] : null;
+    if (!pack) return;
+    K.units.forEach(function (u) {
+      const ov = pack[u.id];
+      if (!ov) return;
+      if (ov.title) u.title = ov.title;
+      if (ov.sub) u.sub = ov.sub;
+      u.lessons.forEach(function (l, li) {
+        const lo = (ov.lessons || [])[li];
+        if (!lo) return;
+        if (lo.title) l.title = lo.title;
+        if (lo.sub) l.sub = lo.sub;
+        if (lo.tip && l.tip) l.tip = lo.tip;
+        if (lo.items) {
+          l.items = l.items.map(function (raw, i) {
+            const t = lo.items[i];
+            if (!t) return raw;
+            const c = raw.slice();
+            c[1] = t[0];
+            if (raw[3]) c[4] = t[1] || raw[4];
+            return c;
+          });
+        }
+        if (lo.dialogue && l.dialogue) {
+          l.dialogue = [lo.dialogue[0], l.dialogue[1].map(function (r, i) {
+            return [r[0], r[1], lo.dialogue[1][i] || r[2]];
+          })];
+        }
+      });
+    });
+  };
+
   K.build = function () {
     if (K.built) return K;
     K.built = true;
     EXTRA_PROPER.forEach(function (p) { K.proper.add(p); });
+    K.localize();
 
     K.units.forEach(function (u, ui) {
       u.index = ui;

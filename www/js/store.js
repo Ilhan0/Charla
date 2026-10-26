@@ -13,7 +13,7 @@
       v: 1,
       savedAt: 0,
       profile: { onboarded: false, goal: '', dailyGoal: 80, created: Date.now() },
-      settings: { rate: 0.9, voice: '', sound: true, haptics: true, theme: 'auto', autoplay: true },
+      settings: { rate: 0.9, voice: '', sound: true, haptics: true, theme: 'auto', autoplay: true, lang: 'auto' },
       lessons: {},
       vocab: {},
       stats: { xp: 0, days: {}, answers: 0, correct: 0, sessions: 0 }

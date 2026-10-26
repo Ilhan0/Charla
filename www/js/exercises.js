@@ -9,6 +9,7 @@
 (function () {
   'use strict';
   const C = (window.Charla = window.Charla || {});
+  const tr = C.i18n.t;
   const U = C.util;
   const h = U.h;
   const T = C.text;
@@ -31,7 +32,7 @@
   // ---------- Neues Wort ----------
   R.intro = function (ex, ctx) {
     const el = h('div',
-      h('div.badge-new', 'Neues Wort'),
+      h('div.badge-new', tr('Neues Wort')),
       emoji(ex.emoji),
       h('div.q-es', { lang: 'es' }, ex.es),
       h('div.q-de', ex.de),
@@ -40,7 +41,7 @@
         h('div.ex-es', { lang: 'es' }, ex.exEs, ui.speakBtn(ex.exEs, { size: 18 })),
         h('div.ex-de', ex.exDe)) : null);
     return {
-      el: el, mode: 'continue', footerLabel: 'Weiter',
+      el: el, mode: 'continue', footerLabel: tr('Weiter'),
       mount: function () { if (ctx.autoplay) ctx.say(ex.es); }
     };
   };
@@ -154,7 +155,7 @@
   function typedExercise(ex, ctx, head) {
     const input = h('input.field', {
       type: 'text', lang: 'es', autocapitalize: 'none', autocorrect: 'off', spellcheck: 'false',
-      autocomplete: 'off', enterkeyhint: 'done', placeholder: 'Auf Spanisch schreiben …', 'aria-label': 'Antwort'
+      autocomplete: 'off', enterkeyhint: 'done', placeholder: tr('Auf Spanisch schreiben …'), 'aria-label': tr('Antwort')
     });
     input.addEventListener('input', function () { ctx.setReady(input.value.trim().length > 0); });
     input.addEventListener('keydown', function (e) {
@@ -175,7 +176,7 @@
       }, k));
     });
     return {
-      el: h('div', head, input, keys), mode: 'check', footerLabel: 'Prüfen',
+      el: h('div', head, input, keys), mode: 'check', footerLabel: tr('Prüfen'),
       mount: function () { setTimeout(function () { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }, 120); },
       check: function () {
         const v = input.value;
@@ -183,9 +184,9 @@
         input.disabled = true;
         input.classList.add(cmp.ok ? 'right' : 'wrong');
         const res = { correct: cmp.ok, kind: cmp.kind, solution: ex.answer, detail: ex.de, say: ex.say === null ? ex.answer : ex.say || ex.answer };
-        if (cmp.kind === 'almost' && cmp.reason === 'accent') res.note = 'Achte auf die Akzente.';
-        if (cmp.kind === 'almost' && cmp.reason === 'typo') res.note = 'Kleiner Tippfehler.';
-        if (!cmp.ok && v.trim()) res.note = 'Deine Antwort: ' + v.trim();
+        if (cmp.kind === 'almost' && cmp.reason === 'accent') res.note = tr('Achte auf die Akzente.');
+        if (cmp.kind === 'almost' && cmp.reason === 'typo') res.note = tr('Kleiner Tippfehler.');
+        if (!cmp.ok && v.trim()) res.note = tr('Deine Antwort: {a}', { a: v.trim() });
         if (cmp.match && cmp.match !== ex.answer) res.solution = cmp.match;
         ctx.finish(res);
       }
@@ -233,7 +234,7 @@
 
     return {
       el: h('div', label(ex.prompt), h('div.q-de', ex.de), slots, bank),
-      mode: 'check', footerLabel: 'Prüfen',
+      mode: 'check', footerLabel: tr('Prüfen'),
       mount: draw,
       check: function () {
         locked = true;
@@ -241,7 +242,7 @@
         const ok = given === ex.expected;
         slots.classList.add(ok ? 'right' : 'wrong');
         ctx.finish({ correct: ok, kind: ok ? 'ok' : 'bad', solution: ex.es, detail: ex.de, say: ex.es,
-          note: ok ? '' : 'Deine Antwort: ' + placed.map(function (id) { return byId[id].text; }).join(' ') });
+          note: ok ? '' : tr('Deine Antwort: {a}', { a: placed.map(function (id) { return byId[id].text; }).join(' ') }) });
       }
     };
   };
@@ -256,7 +257,7 @@
     const colR = h('div.mcol');
 
     function tile(p, side) {
-      const b = h('button.mtile', { type: 'button', lang: side === 'l' ? 'es' : 'de', onclick: function () { click(p, side, b); } }, side === 'l' ? p.es : p.de);
+      const b = h('button.mtile', { type: 'button', lang: side === 'l' ? 'es' : C.i18n.current, onclick: function () { click(p, side, b); } }, side === 'l' ? p.es : p.de);
       b._p = p;
       return b;
     }
@@ -285,7 +286,7 @@
           const results = {};
           ex.pairs.forEach(function (p) { results[p.id] = !wrongIds.has(p.id); });
           setTimeout(function () {
-            ctx.finish({ correct: ok, kind: ok ? 'ok' : 'almost', title: ok ? 'Alle Paare gefunden!' : 'Geschafft!',
+            ctx.finish({ correct: ok, kind: ok ? 'ok' : 'almost', title: ok ? tr('Alle Paare gefunden!') : tr('Geschafft!'),
               solution: '', note: ok ? '' : U.plural(mistakes, 'Fehlversuch', 'Fehlversuche'), itemResults: results, noRetry: true, silent: true });
           }, 350);
         }
@@ -315,9 +316,9 @@
     let rec = null;
     let finished = false;
     const words = h('div.heard-words', { lang: 'es' }, ex.es);
-    const status = h('div.status', canListen ? 'Tippe auf das Mikrofon und sprich den Satz.' : 'Sprich den Satz laut nach.');
+    const status = h('div.status', canListen ? tr('Tippe auf das Mikrofon und sprich den Satz.') : tr('Sprich den Satz laut nach.'));
     const heard = h('div.heard');
-    const mic = h('button.mic', { type: 'button', 'aria-label': 'Aufnehmen', onclick: toggle }, ui.icon('mic', 36));
+    const mic = h('button.mic', { type: 'button', 'aria-label': tr('Aufnehmen'), onclick: toggle }, ui.icon('mic', 36));
     if (!canListen) mic.style.display = 'none';
 
     function showWords(sim) {
@@ -335,7 +336,7 @@
     function start() {
       heard.textContent = '';
       mic.classList.add('rec');
-      status.textContent = 'Ich höre zu … tippe noch einmal zum Beenden.';
+      status.textContent = tr('Ich höre zu … tippe noch einmal zum Beenden.');
       let timer = null;
       rec = A.listen({ hint: ex.es, onPartial: function (t) { heard.textContent = t; } });
       timer = setTimeout(function () { if (rec) rec.stop(); }, 9000);
@@ -348,32 +349,32 @@
     function evaluate(text) {
       if (finished) return;
       heard.textContent = text;
-      if (!text.trim()) { status.textContent = 'Ich habe nichts gehört – versuch es noch einmal.'; return; }
+      if (!text.trim()) { status.textContent = tr('Ich habe nichts gehört – versuch es noch einmal.'); return; }
       attempts++;
       const sim = T.similarity(text, ex.es);
       showWords(sim);
       if (sim.score >= 0.75) {
         finished = true;
-        ctx.finish({ correct: true, kind: 'ok', graded: false, xp: 3, title: 'Gut gesprochen!', solution: ex.es, detail: ex.de });
+        ctx.finish({ correct: true, kind: 'ok', graded: false, xp: 3, title: tr('Gut gesprochen!'), solution: ex.es, detail: ex.de });
       } else if (attempts >= 2) {
-        status.textContent = 'Das üben wir später noch einmal. Hör dir den Satz an und geh weiter.';
-        ctx.setFooterLabel('Weiter');
+        status.textContent = tr('Das üben wir später noch einmal. Hör dir den Satz an und geh weiter.');
+        ctx.setFooterLabel(tr('Weiter'));
       } else {
-        status.textContent = 'Fast! Grün war gut, rot noch einmal üben. Versuch es noch einmal.';
+        status.textContent = tr('Fast! Grün war gut, rot noch einmal üben. Versuch es noch einmal.');
       }
     }
     function fail(err) {
       const code = err && err.message;
       if (code === 'not-allowed' || code === 'not-authorized' || code === 'service-not-allowed') {
-        status.textContent = 'Kein Zugriff auf Mikrofon oder Spracherkennung. Du kannst das in den iOS-Einstellungen erlauben.';
+        status.textContent = tr('Kein Zugriff auf Mikrofon oder Spracherkennung. Du kannst das in den iOS-Einstellungen erlauben.');
       } else if (code === 'no-speech') {
-        status.textContent = 'Ich habe nichts gehört – versuch es noch einmal.';
+        status.textContent = tr('Ich habe nichts gehört – versuch es noch einmal.');
         return;
       } else {
-        status.textContent = 'Die Spracherkennung ist gerade nicht verfügbar. Sprich den Satz einfach laut nach.';
+        status.textContent = tr('Die Spracherkennung ist gerade nicht verfügbar. Sprich den Satz einfach laut nach.');
       }
       mic.style.display = 'none';
-      ctx.setFooterLabel('Ich habe es gesprochen');
+      ctx.setFooterLabel(tr('Ich habe es gesprochen'));
     }
 
     return {
@@ -381,7 +382,7 @@
         h('div.q-es.row', { lang: 'es' }, words, ui.speakBtn(ex.es)),
         h('div.q-de.small', ex.de),
         h('div.mic-box', mic, status, heard)),
-      mode: 'continue', footerLabel: canListen ? 'Überspringen' : 'Ich habe es gesprochen', footerGhost: canListen,
+      mode: 'continue', footerLabel: canListen ? tr('Überspringen') : tr('Ich habe es gesprochen'), footerGhost: canListen,
       mount: function () { if (ctx.autoplay) ctx.say(ex.es); },
       destroy: function () { if (rec) { try { rec.stop(); } catch (e) { /* ignorieren */ } } }
     };
@@ -423,11 +424,11 @@
     });
     function highlight(i) { nodes.forEach(function (n, k) { n.classList.toggle('now', k === i); }); }
 
-    const playBtn = h('button.btn.soft', { type: 'button', onclick: function () { toggle(); } }, ui.icon('play', 18), 'Alles abspielen');
+    const playBtn = h('button.btn.soft', { type: 'button', onclick: function () { toggle(); } }, ui.icon('play', 18), tr('Alles abspielen'));
     const trBtn = h('button.btn.ghost.small', { type: 'button', onclick: function () {
       thread.classList.toggle('hide-de');
-      trBtn.textContent = thread.classList.contains('hide-de') ? 'Übersetzung zeigen' : 'Übersetzung verbergen';
-    } }, 'Übersetzung verbergen');
+      trBtn.textContent = thread.classList.contains('hide-de') ? tr('Übersetzung zeigen') : tr('Übersetzung verbergen');
+    } }, tr('Übersetzung verbergen'));
 
     function toggle() {
       if (playBtn.classList.contains('active')) { token++; A.stop(); highlight(-1); setPlaying(false); return; }
@@ -437,7 +438,7 @@
       playBtn.classList.toggle('active', on);
       U.clear(playBtn);
       playBtn.appendChild(ui.icon(on ? 'stop' : 'play', 18));
-      playBtn.appendChild(document.createTextNode(on ? 'Stopp' : 'Alles abspielen'));
+      playBtn.appendChild(document.createTextNode(on ? tr('Stopp') : tr('Alles abspielen')));
     }
     async function playAll() {
       const my = ++token;
@@ -454,9 +455,9 @@
     }
 
     return {
-      el: h('div', label('Dialog'), h('div.dlg-title', ex.title),
+      el: h('div', label(tr('Dialog')), h('div.dlg-title', ex.title),
         h('div.dlg-tools', playBtn, trBtn), thread),
-      mode: 'continue', footerLabel: 'Weiter',
+      mode: 'continue', footerLabel: tr('Weiter'),
       mount: function () { setTimeout(function () { if (ctx.autoplay) playAll(); }, 250); },
       destroy: function () { token++; A.stop(); }
     };
@@ -466,7 +467,7 @@
   R.tip = function (ex) {
     return {
       el: h('div', h('div.tip-card', h('div.tip-ico', '💡'), h('div.tip-title', ex.title), h('div.tip-text', ui.paras(ex.text)))),
-      mode: 'continue', footerLabel: 'Verstanden'
+      mode: 'continue', footerLabel: tr('Verstanden')
     };
   };
 

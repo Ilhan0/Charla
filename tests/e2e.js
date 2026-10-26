@@ -105,7 +105,7 @@ async function playSession(page, label, opts) {
   const browser = await chromium.launch();
   const ctx = await browser.newContext({
     viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true,
-    colorScheme: process.env.DARK ? 'dark' : 'light', locale: 'de-DE'
+    colorScheme: process.env.DARK ? 'dark' : 'light', locale: process.env.LANGUAGE === 'en' ? 'en-US' : 'de-DE'
   });
   const page = await ctx.newPage();
   page.on('pageerror', e => { errors.push('pageerror: ' + e.message); });
@@ -187,6 +187,31 @@ async function playSession(page, label, opts) {
   const r2 = await playSession(page, 'R1', { wrongEvery: 4 });
   await page.locator('.foot .btn').last().click();
   await page.waitForTimeout(400);
+
+  const missingBefore = await page.evaluate(() => Charla.i18n.missing);
+  if (missingBefore.length) errors.push('Fehlende Übersetzungen: ' + JSON.stringify(missingBefore));
+  // Sprache wechseln: Profil → Sprachwahl → Seite lädt neu und bleibt im Profil
+  const startLang = await page.evaluate(() => Charla.i18n.current);
+  const other = startLang === 'de' ? 'English' : 'Deutsch';
+  await page.locator('.tab').nth(3).click();
+  await page.waitForTimeout(300);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'load' }),
+    page.locator('.seg.small button', { hasText: new RegExp('^' + other + '$') }).click()
+  ]);
+  await page.waitForSelector('.tab.on');
+  await page.waitForTimeout(400);
+  const after = await page.evaluate(() => ({ lang: Charla.i18n.current, html: document.documentElement.lang, tab: document.querySelector('.tab.on .tab-label').textContent, title: document.title }));
+  log('Sprachwechsel:', startLang, '→', JSON.stringify(after));
+  if (after.lang === startLang || after.html !== after.lang) errors.push('Sprachwechsel fehlgeschlagen');
+  await shot(page, '16-profile-other-language');
+  await page.locator('.tab').nth(0).click();
+  await page.waitForTimeout(300);
+  await shot(page, '17-home-other-language');
+  const state0 = await page.evaluate(() => JSON.parse(Charla.store.exportJSON()));
+  if (!state0.stats.xp) errors.push('Lernstand nach Sprachwechsel verloren');
+  const missing = await page.evaluate(() => Charla.i18n.missing);
+  if (missing.length) errors.push('Fehlende Übersetzungen: ' + JSON.stringify(missing));
 
   const state = await page.evaluate(() => JSON.parse(Charla.store.exportJSON()));
   log('XP', state.stats.xp, 'Wörter', Object.keys(state.vocab).length, 'Lektionen', JSON.stringify(state.lessons));
