@@ -1,0 +1,12 @@
+{
+  "name": "charla-tests",
+  "private": true,
+  "description": "Automatische Tests für Charla",
+  "scripts": {
+    "validate": "node validate.js",
+    "e2e": "node e2e.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.45.0"
+  }
+}

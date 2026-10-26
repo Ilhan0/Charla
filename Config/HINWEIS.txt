@@ -1,0 +1,1 @@
+Dieser Ordner muss existieren. XcodeGen legt hier beim Bauen die Datei Info.plist ab.
