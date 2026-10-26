@@ -1,7 +1,0 @@
-Charla.xcodeproj/
-build/
-*.ipa
-tests/shots/
-node_modules/
-.DS_Store
-Config/Info.plist
